@@ -21,4 +21,5 @@
     <string name="emailverSend">Email verification link send</string>
     <string name="pleaseVerifyEmail">Please verify your email</string>
     <string name="failedLoginGoogle">Login issue. Check network connectivity.</string>
+    <string name="viewAllComments">View all comment</string>
 </resources>

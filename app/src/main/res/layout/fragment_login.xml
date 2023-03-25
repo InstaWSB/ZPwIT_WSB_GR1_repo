@@ -40,6 +40,8 @@
             android:layout_margin="@dimen/_6mdp"
             android:background="@drawable/text_box"
             android:hint="@string/password"
+            android:ems="10"
+            android:inputType="textPassword"
             android:padding="@dimen/_9mdp" />
 
         <TextView

@@ -78,7 +78,7 @@ public class Home extends Fragment {
     private void loadDataFromFirestore() {
     CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
         .document(user.getUid()).collection("Post Images");
-
+/
 
     }
 

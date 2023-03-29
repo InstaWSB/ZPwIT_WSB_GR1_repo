@@ -1,13 +1,7 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +14,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -31,9 +29,7 @@ import com.zpwit_wsb_gr1_project.FragmentReplacerActivity;
 import com.zpwit_wsb_gr1_project.MainActivity;
 import com.zpwit_wsb_gr1_project.R;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -133,6 +129,12 @@ public class CreateAccountFragment extends Fragment {
 
                             FirebaseUser user = auth.getCurrentUser();
 
+                            UserProfileChangeRequest.Builder request = new UserProfileChangeRequest.Builder();
+                            request.setDisplayName(name);
+
+                            assert user != null;
+                            user.updateProfile(request.build());
+
                             user.sendEmailVerification()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -158,8 +160,7 @@ public class CreateAccountFragment extends Fragment {
 
     private void uploadUser(FirebaseUser user, String name, String email) {
 
-        List<String> list = new ArrayList<>();
-        List<String> list1 = new ArrayList<>();
+
 
         Map<String, Object> map = new HashMap<>();
 
@@ -167,11 +168,10 @@ public class CreateAccountFragment extends Fragment {
         map.put("email", email);
         map.put("profileImage", " ");
         map.put("uid", user.getUid());
-        map.put("status", " ");
-        map.put("search", name.toLowerCase());
 
-        map.put("followers", list);
-        map.put("following", list1);
+        map.put("followers", 0);
+        map.put("following", 0);
+        map.put("status", " ");
 
 
         FirebaseFirestore.getInstance().collection("Users").document(user.getUid())

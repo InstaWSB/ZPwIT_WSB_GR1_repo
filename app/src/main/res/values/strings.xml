@@ -21,4 +21,16 @@
     <string name="emailverSend">Email verification link send</string>
     <string name="pleaseVerifyEmail">Please verify your email</string>
     <string name="failedLoginGoogle">Login issue. Check network connectivity.</string>
+    <string name="viewAllComments">View all comment</string>
+    <string name="userName">User name</string>
+    <string name="aboutPlaceholder">Love to travel around the world. Placeholder text.</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="posts">Posts</string>
+    <string name="sayHi">Say Hi !</string>
+    <string name="follow">Follow</string>
+    <string name="forgotPasswordNewLane">Forgot \nPassword</string>
+    <string name="Recover">Recover</string>
+    <string name="passwordResetSend">Password reset email send successfully</string>
+    <string name="addSomething">Add Something About This Post</string>
 </resources>

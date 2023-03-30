@@ -1,5 +1,12 @@
 package com.zpwit_wsb_gr1_project;
 
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,11 +23,13 @@ import android.widget.TextView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
+main
 import com.zpwit_wsb_gr1_project.adapter.ViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+main
 
 public class MainActivity extends AppCompatActivity {
 

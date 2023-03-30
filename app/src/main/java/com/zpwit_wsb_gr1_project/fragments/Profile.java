@@ -1,6 +1,16 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+main
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+main
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -46,6 +57,8 @@ public class Profile extends Fragment {
     private FirebaseUser user;
     private LinearLayout countLayout;
     boolean isMyProfile = true;
+    private ImageButton editProfileBtn;
+main
     private String uid;
     FirestoreRecyclerAdapter<PostImageModel, PostImageHolder> adapter;
     public Profile() {
@@ -140,6 +153,8 @@ public class Profile extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         startChatBtn = view.findViewById(R.id.startChatBtn);
         countLayout = view.findViewById(R.id.countLayout);
+        editProfileBtn = view.findViewById(R.id.edit_profileImage);
+main
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();

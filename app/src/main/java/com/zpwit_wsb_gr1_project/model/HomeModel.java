@@ -1,5 +1,9 @@
 package com.zpwit_wsb_gr1_project.model;
 
+public class HomeModel {
+
+    private String userName, timestamp, profileImage, postImage, uid, comments, description;
+
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
@@ -7,6 +11,7 @@ import java.util.Date;
 public class HomeModel {
 
     private String userName, timestamp, profileImage, postImage, uid;
+ main
 
 
     private int likeCount;
@@ -15,15 +20,24 @@ public class HomeModel {
 
     }
 
+    public HomeModel(String userName, String timestamp, String profileImage, String postImage, String uid, String comments, String description, int likeCount) {
     public HomeModel(String userName, String timestamp, String profileImage, String postImage, String uid, int likeCount) {
+main
         this.userName = userName;
         this.timestamp = timestamp;
         this.profileImage = profileImage;
         this.postImage = postImage;
         this.uid = uid;
+        this.comments = comments;
+        this.description = description;
         this.likeCount = likeCount;
     }
 
+
+        this.likeCount = likeCount;
+    }
+
+main
     public String getUserName() {
         return userName;
     }
@@ -64,6 +78,23 @@ public class HomeModel {
         this.uid = uid;
     }
 
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+main
     public int getLikeCount() {
         return likeCount;
     }

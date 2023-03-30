@@ -3,6 +3,12 @@ package com.zpwit_wsb_gr1_project.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+main
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+main
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.adapter.HomeAdapter;
 import com.zpwit_wsb_gr1_project.model.HomeModel;
@@ -71,8 +88,13 @@ public class Home extends Fragment {
     }
 
     private void loadDataFromFirestore() {
+    CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
+        .document(user.getUid()).collection("Post Images");
+/
+
         list.add(new HomeModel("Kisiel", "01/11/2077", " ", " ", "3233434", 12));
         adapter.notifyDataSetChanged();
+main
     }
 
     private void init(View view) {

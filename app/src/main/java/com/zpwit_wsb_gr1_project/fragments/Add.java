@@ -54,6 +54,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.zpwit_wsb_gr1_project.R;
+main
 
 
 public class Add extends Fragment {
@@ -73,6 +83,9 @@ public class Add extends Fragment {
     public Add() {
         // Required empty public constructor
     }
+
+
+main
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -260,4 +273,5 @@ public class Add extends Fragment {
         dialog.setCancelable(false);
 
     }
+main
 }

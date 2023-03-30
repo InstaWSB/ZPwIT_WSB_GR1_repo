@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+main
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+main
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -33,6 +44,8 @@ import com.google.firebase.firestore.Query;
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.model.PostImageModel;
 
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -45,6 +58,7 @@ public class Profile extends Fragment {
     private LinearLayout countLayout;
     boolean isMyProfile = true;
     private ImageButton editProfileBtn;
+main
     private String uid;
     FirestoreRecyclerAdapter<PostImageModel, PostImageHolder> adapter;
     public Profile() {
@@ -140,6 +154,7 @@ public class Profile extends Fragment {
         startChatBtn = view.findViewById(R.id.startChatBtn);
         countLayout = view.findViewById(R.id.countLayout);
         editProfileBtn = view.findViewById(R.id.edit_profileImage);
+main
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();

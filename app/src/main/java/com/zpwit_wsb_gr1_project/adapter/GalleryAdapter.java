@@ -1,5 +1,9 @@
 package com.zpwit_wsb_gr1_project.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +18,7 @@ import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.model.GalleryImages;
 
 import java.util.List;
+import java.util.Random;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryHolder> {
 
@@ -35,6 +40,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
 
     @Override
     public void onBindViewHolder(@NonNull GalleryHolder holder, int position) {
+
+
 
         Glide.with(holder.itemView.getContext().getApplicationContext())
                 .load(list.get(position).getPicUri())

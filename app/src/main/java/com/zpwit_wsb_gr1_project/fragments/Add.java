@@ -2,18 +2,12 @@ package com.zpwit_wsb_gr1_project.fragments;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -26,13 +20,30 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.text.TextPaint;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -44,6 +55,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.adapter.GalleryAdapter;
@@ -54,16 +66,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.zpwit_wsb_gr1_project.R;
-main
 
 
 public class Add extends Fragment {
@@ -75,17 +77,15 @@ public class Add extends Fragment {
     private EditText descET;
     private ImageView imageView;
     private RecyclerView recyclerView;
-    private ImageButton backBtn, nextBtn;
+    private ImageButton  nextBtn;
     private FirebaseUser user;
     private GalleryAdapter adapter;
     private List<GalleryImages> list;
+    private LinearLayout linearView;
 
     public Add() {
         // Required empty public constructor
     }
-
-
-main
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,7 +121,6 @@ main
         adapter.SendImage(new GalleryAdapter.SendImage() {
             @Override
             public void onSend(Uri picUri) {
-                imageUri = picUri;
 
 
 
@@ -146,6 +145,8 @@ main
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageReference = storage.getReference().child("Post Images/"+System.currentTimeMillis());
 
+                dialog.show();
+
                 storageReference.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -158,6 +159,11 @@ main
                                 }
                             });
                         }
+                        else
+                        {
+                            dialog.dismiss();
+                            Toast.makeText(getContext(),getResources().getString(R.string.failedUploadPost), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -167,18 +173,28 @@ main
     ActivityResultLauncher<Intent> cropActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
-            Intent intent = result.getData();
 
-            CropImage.ActivityResult result1 = CropImage.getActivityResult(intent);
-            Uri imageUri = result1.getUri();
+            try {
+                Intent intent = result.getData();
 
-            Glide.with(getContext()).load(imageUri).into(imageView);
-            imageView.setVisibility(View.VISIBLE);
-            nextBtn.setVisibility(View.VISIBLE);
+                CropImage.ActivityResult result1 = CropImage.getActivityResult(intent);
+                imageUri = result1.getUri();
+
+                Glide.with(getContext()).load(imageUri).into(imageView);
+                linearView.setVisibility(View.VISIBLE);
+                nextBtn.setVisibility(View.VISIBLE);
+
+            }
+            catch (Exception e)
+            {
+                Log.e("TAG", "Error: " + e.getMessage());
+            }
         }
     });
 
     private void uploadData(String imageURL) {
+
+
         CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
                 .document(user.getUid()).collection("Post Images");
 
@@ -196,6 +212,8 @@ main
         map.put("userName", user.getDisplayName());
         map.put("profileImage", String.valueOf(user.getPhotoUrl()));
         map.put("likeCount", 0);
+        map.put("comments", "");
+        map.put("uid", user.getUid());
 
 
 
@@ -204,12 +222,19 @@ main
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful())
                 {
+                    Toast.makeText(getContext(),getResources().getString(R.string.uploadedPost), Toast.LENGTH_SHORT).show();
                     System.out.println();
+                    imageUri = null;
+                    descET.setText("");
+                    nextBtn.setVisibility(View.GONE);
+                    linearView.setVisibility(View.GONE);
+
                 }
                 else
                 {
                     Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
+                dialog.dismiss();
             }
         });
     }
@@ -262,9 +287,8 @@ main
         descET = view.findViewById(R.id.descriptionET);
         imageView = view.findViewById(R.id.imageView);
         recyclerView = view.findViewById(R.id.recyclerView);
-        backBtn = view.findViewById(R.id.backBtn);
         nextBtn = view.findViewById(R.id.nextBtn);
-
+        linearView = view.findViewById(R.id.LinearImage);
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         dialog = new Dialog(getContext());
@@ -273,5 +297,4 @@ main
         dialog.setCancelable(false);
 
     }
-main
 }

@@ -3,14 +3,13 @@ package com.zpwit_wsb_gr1_project.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-main
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-main
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +21,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.zpwit_wsb_gr1_project.FragmentReplacerActivity;
-main
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.model.HomeModel;
 
@@ -56,9 +54,6 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
         holder.userNameTv.setText(list.get(position).getUserName());
         holder.timeTv.setText("" + list.get(position).getTimestamp());
 
-        Random random = new Random();
-
-        int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
 
         int count = list.get(position).getLikeCount();
 
@@ -70,6 +65,13 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
             holder.likeCountTv.setText(count + " Likes");
         }
 
+        holder.descriptionTv.setText(list.get(position).getDescription());
+
+        Random random = new Random();
+
+        int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+
+
         Glide.with(context.getApplicationContext())
                 .load(list.get(position).getProfileImage())
                 .placeholder(R.drawable.ic_person)
@@ -77,7 +79,7 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
                 .into(holder.profileImage);
 
         Glide.with(context.getApplicationContext())
-                .load(list.get(position).getProfileImage())
+                .load(list.get(position).getImageUrl())
                 .placeholder(new ColorDrawable(color))
                 .timeout(7000)
                 .into(holder.imageView);
@@ -98,6 +100,7 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
         private TextView userNameTv;
         private TextView timeTv;
         private TextView likeCountTv;
+        private TextView descriptionTv;
         private ImageView imageView;
         private ImageButton likeBtn, commentBtn, shareBtn;
 
@@ -111,6 +114,23 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
             likeCountTv = itemView.findViewById(R.id.likeCountTv);
             commentBtn = itemView.findViewById(R.id.commentBtn);
             shareBtn = itemView.findViewById(R.id.shareBtn);
+            descriptionTv = itemView.findViewById(R.id.descTv);
+            descriptionTv.setMovementMethod(new ScrollingMovementMethod());
+
+            descriptionTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (descriptionTv.getMaxLines()==3)
+                    {
+                        descriptionTv.setMaxLines(30);
+
+                    }
+                    else
+                    {
+                        descriptionTv.setMaxLines(3);
+                    }
+                }
+            });
 
         }
 

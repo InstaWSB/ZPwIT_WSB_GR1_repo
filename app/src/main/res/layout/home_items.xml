@@ -43,9 +43,10 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_150mdp"
+        android:layout_height="@dimen/_165mdp"
         android:layout_below="@id/profileImage"
-        android:scaleType="centerCrop" />
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -86,6 +87,7 @@
         android:paddingStart="@dimen/_6mdp"
         android:paddingEnd="@dimen/_6mdp"
         android:textSize="@dimen/_12font_mdp"
+        android:maxLines="3"
         android:textStyle="bold" />
 
     <TextView

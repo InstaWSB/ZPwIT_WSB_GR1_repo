@@ -31,6 +31,7 @@
             android:layout_margin="@dimen/_6mdp"
             android:background="@drawable/text_box"
             android:hint="@string/email"
+            android:inputType="textEmailAddress"
             android:padding="@dimen/_9mdp" />
 
         <EditText
@@ -39,8 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_6mdp"
             android:background="@drawable/text_box"
-            android:hint="@string/password"
             android:ems="10"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:padding="@dimen/_9mdp" />
 

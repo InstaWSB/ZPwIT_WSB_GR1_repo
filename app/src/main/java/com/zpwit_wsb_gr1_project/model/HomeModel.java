@@ -1,18 +1,15 @@
 package com.zpwit_wsb_gr1_project.model;
 
-public class HomeModel {
-
-    private String userName, timestamp, profileImage, postImage, uid, comments, description;
-
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 
 public class HomeModel {
 
-    private String userName, timestamp, profileImage, postImage, uid;
- main
+    private String userName, profileImage, imageUrl, uid, comments, description, id;
 
+    @ServerTimestamp
+    private Date timestamp;
 
     private int likeCount;
 
@@ -20,38 +17,25 @@ public class HomeModel {
 
     }
 
-    public HomeModel(String userName, String timestamp, String profileImage, String postImage, String uid, String comments, String description, int likeCount) {
-    public HomeModel(String userName, String timestamp, String profileImage, String postImage, String uid, int likeCount) {
-main
+    public HomeModel(String userName, String profileImage, String imageUrl, String uid, String comments, String description, String id, Date timestamp, int likeCount) {
         this.userName = userName;
-        this.timestamp = timestamp;
         this.profileImage = profileImage;
-        this.postImage = postImage;
+        this.imageUrl = imageUrl;
         this.uid = uid;
         this.comments = comments;
         this.description = description;
+        this.id = id;
+        this.timestamp = timestamp;
         this.likeCount = likeCount;
     }
 
 
-        this.likeCount = likeCount;
-    }
-
-main
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getProfileImage() {
@@ -62,12 +46,12 @@ main
         this.profileImage = profileImage;
     }
 
-    public String getPostImage() {
-        return postImage;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setPostImage(String postImage) {
-        this.postImage = postImage;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getUid() {
@@ -94,7 +78,22 @@ main
         this.description = description;
     }
 
-main
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public int getLikeCount() {
         return likeCount;
     }

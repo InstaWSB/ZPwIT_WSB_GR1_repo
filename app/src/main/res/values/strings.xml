@@ -33,5 +33,7 @@
     <string name="Recover">Recover</string>
     <string name="passwordResetSend">Password reset email send successfully</string>
     <string name="addSomething">Add Something About This Post</string>
-main
+    <string name="updatedSuccesfull">Updated Successful</string>
+    <string name="failedUploadPost">Failed to upload post</string>
+    <string name="uploadedPost">Uploaded</string>
 </resources>

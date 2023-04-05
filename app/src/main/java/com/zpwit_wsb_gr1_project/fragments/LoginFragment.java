@@ -253,6 +253,7 @@ public class LoginFragment extends Fragment {
         map.put("followers", 0);
         map.put("following", 0);
         map.put("status", " ");
+        map.put("search", account.getDisplayName().toLowerCase());
 
 
 

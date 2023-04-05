@@ -34,6 +34,7 @@ import com.zpwit_wsb_gr1_project.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -176,6 +177,7 @@ public class CreateAccountFragment extends Fragment {
         map.put("followers", 0);
         map.put("following", 0);
         map.put("status", " ");
+        map.put("search", name.toLowerCase());
 
 
         FirebaseFirestore.getInstance().collection("Users").document(user.getUid())

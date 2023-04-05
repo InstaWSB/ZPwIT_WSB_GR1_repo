@@ -1,5 +1,7 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
+import static com.zpwit_wsb_gr1_project.MainActivity.IS_SEARCHED_USER;
+import static com.zpwit_wsb_gr1_project.MainActivity.USER_ID;
 import static com.zpwit_wsb_gr1_project.fragments.Home.LIST_SIZE;
 
 import android.content.Intent;
@@ -51,6 +53,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.zpwit_wsb_gr1_project.MainActivity;
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.model.PostImageModel;
 
@@ -62,7 +65,7 @@ import java.util.Random;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class Profile extends Fragment {
+public class Profile extends Fragment   {
     private TextView nameTv, toolbarNameTv, statusTv, followingCountTv, followersCountTv, postCountTv;
     private CircleImageView profileImage;
     private Button followBtn, startChatBtn;
@@ -72,6 +75,7 @@ public class Profile extends Fragment {
     boolean isMyProfile = true;
     private ImageButton editProfileBtn;
     private String uid;
+    String userUID;
     FirestoreRecyclerAdapter<PostImageModel, PostImageHolder> adapter;
     public Profile() {
         // Required empty public constructor
@@ -96,13 +100,25 @@ public class Profile extends Fragment {
 
         init(view);
 
+        if (IS_SEARCHED_USER) {
+            isMyProfile = false;
+            userUID = USER_ID;
+        } else {
+            isMyProfile = true;
+            userUID = user.getUid();
+        }
+
         if (isMyProfile) {
+            editProfileBtn.setVisibility(View.VISIBLE);
             followBtn.setVisibility(View.GONE);
             countLayout.setVisibility(View.VISIBLE);
             startChatBtn.setVisibility(View.GONE);
 
         } else {
             followBtn.setVisibility(View.VISIBLE);
+            countLayout.setVisibility(View.GONE);
+            startChatBtn.setVisibility(View.VISIBLE);
+            editProfileBtn.setVisibility(View.GONE);
         }
         loadBasicData();
         recyclerView.setHasFixedSize(true);
@@ -184,7 +200,7 @@ public class Profile extends Fragment {
 
     private void loadBasicData() {
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").
-                document(user.getUid());
+                document(userUID);
 
             userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -208,10 +224,18 @@ public class Profile extends Fragment {
                         followersCountTv.setText(String.valueOf(followers));
                         followingCountTv.setText(String.valueOf(following));
 
-                        Glide.with(getContext().getApplicationContext()).load(profileURL).
-                                placeholder(R.drawable.ic_person)
-                                .timeout(6500)
-                                .into(profileImage);
+
+                        try {
+                            Glide.with(getContext().getApplicationContext()).load(profileURL).
+                                    placeholder(R.drawable.ic_person)
+                                    .timeout(6500)
+                                    .into(profileImage);
+                        }
+                        catch (Exception e)
+                        {
+                            error.printStackTrace();
+                        }
+
 
                     }
 
@@ -246,18 +270,10 @@ public class Profile extends Fragment {
 
     private void loadPostImages() {
 
-        if (isMyProfile)
-        {
-            uid = user.getUid();
-        }
-        else
-        {
 
-        }
-             uid = user.getUid();
 
             DocumentReference reference = FirebaseFirestore.getInstance()
-                    .collection("Users").document(uid);
+                    .collection("Users").document(userUID);
 
         Query query = reference.collection("Post Images");
         FirestoreRecyclerOptions<PostImageModel> options = new FirestoreRecyclerOptions.Builder<PostImageModel>()
@@ -288,6 +304,8 @@ public class Profile extends Fragment {
 
 
         }
+
+
 
     private static class PostImageHolder extends RecyclerView.ViewHolder {
 

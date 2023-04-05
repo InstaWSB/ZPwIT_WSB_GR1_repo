@@ -36,4 +36,6 @@
     <string name="updatedSuccesfull">Updated Successful</string>
     <string name="failedUploadPost">Failed to upload post</string>
     <string name="uploadedPost">Uploaded</string>
+    <string name="searchHere">Search here...</string>
+    <string name="status">Status</string>
 </resources>

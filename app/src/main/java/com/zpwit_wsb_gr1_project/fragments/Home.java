@@ -1,6 +1,7 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -30,7 +32,9 @@ import com.zpwit_wsb_gr1_project.adapter.HomeAdapter;
 import com.zpwit_wsb_gr1_project.model.HomeModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Home extends Fragment {
@@ -41,11 +45,16 @@ public class Home extends Fragment {
     private List<HomeModel> list;
     Activity activity;
     private FirebaseUser user;
-
-    public  static  int LIST_SIZE =0;
+    Context context1;
 
     public Home() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        context1 = context;
     }
 
     @Override
@@ -67,62 +76,123 @@ public class Home extends Fragment {
         init(view);
 
 
-
         list = new ArrayList<>();
         adapter = new HomeAdapter(list, getActivity());
         recyclerView.setAdapter(adapter);
         loadDataFromFirestore();
+
+        adapter.OnPressed(new HomeAdapter.OnPressed() {
+            @Override
+            public void onLiked(int position, String id, String uid, List<String> likeList, boolean isChecked) {
+                DocumentReference reference = FirebaseFirestore.getInstance().collection("Users")
+                        .document(uid)
+                        .collection("Post Images")
+                        .document(id);
+
+                if (likeList.contains(user.getUid()) ) {
+                    likeList.remove(user.getUid()); // unlike
+                } else {
+                    likeList.add(user.getUid()); // like
+                }
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("likes", likeList);
+
+                reference.update(map);
+            }
+
+            @Override
+            public void onComment(int position, String id, String comment) {
+
+            }
+        });
         
     }
 
     private void loadDataFromFirestore() {
-    CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
-        .document(user.getUid()).collection("Post Images");
 
-    reference.addSnapshotListener( (value, error) -> {
-   if (error !=null )
-   {
-       Log.e("Error: ", error.getMessage());
-       return;
-   }
-   if (value == null)
-   {
-       return;
-   }
-   list.clear();
+        final DocumentReference reference = FirebaseFirestore.getInstance().collection("Users")
+                .document(user.getUid());
 
-        for (QueryDocumentSnapshot snapshot : value)
-   {
-       HomeModel model = snapshot.toObject(HomeModel.class);
+        final CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("Users");
 
-       if (!snapshot.exists())
-       {
-           return;
-       }
 
-        list.add(new HomeModel(
-            model.getUserName(),
-                model.getProfileImage(),
-                model.getImageUrl(),
-                model.getUid(),
-                model.getComments(),
-                model.getDescription(),
-                model.getId(),
-                model.getTimestamp(),
-                model.getLikeCount()
-        ));
-   }
-        adapter.notifyDataSetChanged();
+            reference.addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.d("Error: ", error.getMessage());
+                }
 
-        LIST_SIZE = list.size();
+                if (value == null)
+                {
+                    return;
+                }
 
-    });
+                List<String> uidList = (List<String>) value.get("following");
+
+                if (uidList == null || uidList.isEmpty())
+                {
+                    return;
+                }
+
+                collectionReference.whereIn("uid", uidList).addSnapshotListener((value1, error1) -> {
+                    if (error1 != null) {
+                        Log.d("Error: ", error1.getMessage());
+                    }
+
+                    if (value1 == null)
+                    {
+                        return;
+
+                    }
+
+                    for (QueryDocumentSnapshot snapshot : value1) {
+
+                        snapshot.getReference().collection("Post Images").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot value2, @Nullable FirebaseFirestoreException error2) {
+                                if (error2 != null) {
+                                    Log.d("Error: ", error2.getMessage());
+                                }
+
+                                if (value2 == null)
+                                {
+                                    return;
+                                }
+                                list.clear();
+                                for (final QueryDocumentSnapshot snapshot1 : value2) {
+                                    if (!snapshot1.exists())
+                                    {
+                                        return;
+                                    }
+                                    HomeModel model = snapshot1.toObject(HomeModel.class);
+
+                                    list.add(new HomeModel(
+                                            model.getName(),
+                                            model.getProfileImage(),
+                                            model.getImageUrl(),
+                                            model.getUid(),
+                                            model.getComments(),
+                                            model.getDescription(),
+                                            model.getId(),
+                                            model.getTimestamp(),
+                                            model.getLikes()));
+                                }
+                                adapter.notifyDataSetChanged();
+
+                            }
+                        });
+                    }
+
+                });
+
+            });
+
     }
 
     private void init(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context1));
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         if (getActivity() != null)

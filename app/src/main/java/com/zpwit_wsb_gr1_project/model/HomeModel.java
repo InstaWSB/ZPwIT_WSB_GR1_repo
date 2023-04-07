@@ -3,22 +3,23 @@ package com.zpwit_wsb_gr1_project.model;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 public class HomeModel {
 
-    private String userName, profileImage, imageUrl, uid, comments, description, id;
+    private String name, profileImage, imageUrl, uid, comments, description, id;
 
     @ServerTimestamp
     private Date timestamp;
+    private List<String> likes;
 
-    private int likeCount;
 
     public HomeModel() {
 
     }
 
-    public HomeModel(String userName, String profileImage, String imageUrl, String uid, String comments, String description, String id, Date timestamp, int likeCount) {
-        this.userName = userName;
+    public HomeModel(String name, String profileImage, String imageUrl, String uid, String comments, String description, String id, Date timestamp, List<String> likes) {
+        this.name = name;
         this.profileImage = profileImage;
         this.imageUrl = imageUrl;
         this.uid = uid;
@@ -26,16 +27,23 @@ public class HomeModel {
         this.description = description;
         this.id = id;
         this.timestamp = timestamp;
-        this.likeCount = likeCount;
+        this.likes = likes;
     }
 
-
-    public String getUserName() {
-        return userName;
+    public List<String> getLikes() {
+        return likes;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getProfileImage() {
@@ -94,11 +102,5 @@ public class HomeModel {
         this.timestamp = timestamp;
     }
 
-    public int getLikeCount() {
-        return likeCount;
-    }
 
-    public void setLikeCount(int likeCount) {
-        this.likeCount = likeCount;
-    }
 }

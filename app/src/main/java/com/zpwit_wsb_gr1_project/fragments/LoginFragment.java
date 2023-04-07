@@ -3,6 +3,7 @@ package com.zpwit_wsb_gr1_project.fragments;
 import static com.zpwit_wsb_gr1_project.fragments.CreateAccountFragment.EMAIL_REGEX;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -46,7 +47,9 @@ import com.zpwit_wsb_gr1_project.FragmentReplacerActivity;
 import com.zpwit_wsb_gr1_project.MainActivity;
 import com.zpwit_wsb_gr1_project.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -62,12 +65,17 @@ public class LoginFragment extends Fragment {
     AnimationSet s;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth auth;
-
+    Context context1;
     public LoginFragment() {
         // Required empty public constructor
     }
 
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        context1 = context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,12 +111,12 @@ public class LoginFragment extends Fragment {
                 String password = passwordEt.getText().toString();
 
                 if (email.isEmpty() || !email.matches(EMAIL_REGEX)) {
-                    emailEt.setError(getResources().getString(R.string.inputValidMail));
+                    emailEt.setError(context1.getResources().getString(R.string.inputValidMail));
                     return;
                 }
 
                 if (password.isEmpty() || password.length() < 6) {
-                    passwordEt.setError(getResources().getString(R.string.inputValidPassword));
+                    passwordEt.setError(context1.getResources().getString(R.string.inputValidPassword));
                     return;
                 }
                 progressBar.setVisibility(View.VISIBLE);
@@ -122,14 +130,14 @@ public class LoginFragment extends Fragment {
                                     FirebaseUser user = auth.getCurrentUser();
 
                                     if (!user.isEmailVerified()) {
-                                        Toast.makeText(getContext(), getResources().getString(R.string.pleaseVerifyEmail), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context1, context1.getResources().getString(R.string.pleaseVerifyEmail), Toast.LENGTH_SHORT).show();
                                     }
 
                                     sendUserToMainActivity();
 
                                 } else {
                                     String exception = "Error: " + task.getException().getMessage();
-                                    Toast.makeText(getContext(), exception, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context1, exception, Toast.LENGTH_SHORT).show();
                                     progressBar.setVisibility(View.GONE);
                                 }
 
@@ -177,8 +185,8 @@ public class LoginFragment extends Fragment {
         forgotPasswordTv = view.findViewById(R.id.forgotTV);
         progressBar = view.findViewById(R.id.progressBar);
 
-        scaleUp = AnimationUtils.loadAnimation(getContext(), R.anim.scale_up);
-        scaleDown = AnimationUtils.loadAnimation(getContext(), R.anim.scale_down);
+        scaleUp = AnimationUtils.loadAnimation(context1, R.anim.scale_up);
+        scaleDown = AnimationUtils.loadAnimation(context1, R.anim.scale_down);
         s = new AnimationSet(false);//false means don't share interpolators
         s.addAnimation(scaleDown);
         s.addAnimation(scaleUp);
@@ -205,7 +213,7 @@ public class LoginFragment extends Fragment {
 
              } catch (ApiException e) {
                  e.printStackTrace();
-                 Snackbar snackbar =  Snackbar.make(parentLayout, getResources().getString(R.string.failedLoginGoogle), 2000);
+                 Snackbar snackbar =  Snackbar.make(parentLayout, context1.getResources().getString(R.string.failedLoginGoogle), 2000);
                  snackbar.setTextMaxLines(10);
                  snackbar.show();
 
@@ -230,7 +238,7 @@ public class LoginFragment extends Fragment {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
-                            Snackbar snackbar =  Snackbar.make(parentLayout, getResources().getString(R.string.failedLoginGoogle), 2000);
+                            Snackbar snackbar =  Snackbar.make(parentLayout, context1.getResources().getString(R.string.failedLoginGoogle), 2000);
                             snackbar.setTextMaxLines(10);
                             snackbar.show();
                         }
@@ -245,16 +253,16 @@ public class LoginFragment extends Fragment {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
 
         Map<String, Object> map = new HashMap<>();
-
+        List<String> list = new ArrayList<>();
+        List<String> list1 = new ArrayList<>();
         map.put("name", account.getDisplayName());
         map.put("email", account.getEmail());
         map.put("profileImage", String.valueOf(account.getPhotoUrl()));
         map.put("uid", user.getUid());
-        map.put("followers", 0);
-        map.put("following", 0);
         map.put("status", " ");
         map.put("search", account.getDisplayName().toLowerCase());
-
+        map.put("followers", list);
+        map.put("following", list1);
 
 
         FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
@@ -270,7 +278,7 @@ public class LoginFragment extends Fragment {
 
                         } else {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getContext(), "Error: " + task.getException().getMessage(),
+                            Toast.makeText(context1, "Error: " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                         }
 

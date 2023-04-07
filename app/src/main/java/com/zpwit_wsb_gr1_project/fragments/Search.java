@@ -1,5 +1,6 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -17,6 +18,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -40,7 +43,8 @@ public class Search extends Fragment {
     CollectionReference reference;
     private List<Users> list;
     OnDataPass onDataPass;
-
+    Context context1;
+    private FirebaseUser user;
     public interface OnDataPass {
         void onChange(String uid);
     }
@@ -56,7 +60,7 @@ public class Search extends Fragment {
         super.onAttach(context);
 
         onDataPass = (OnDataPass) context;
-
+           context1 = context;
     }
 
 
@@ -108,8 +112,13 @@ public class Search extends Fragment {
                 list.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     Users users = snapshot.toObject(Users.class);
-                    list.add(users);
+                    if (!users.getUid().equals(user.getUid()))
+                    {
+                        list.add(users);
+                    }
+
                 }
+
                 adapter.notifyDataSetChanged();
 
             }
@@ -137,10 +146,10 @@ public class Search extends Fragment {
 
                                 Users users = snapshot.toObject(Users.class);
                                 list.add(users);
-                                Toast.makeText(getContext(), "hehehe", Toast.LENGTH_SHORT).show();
-                            }
-                            adapter.notifyDataSetChanged();
 
+                            }
+
+                            adapter.notifyDataSetChanged();
 
                         }
 
@@ -169,12 +178,13 @@ public class Search extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(context1));
 
         list = new ArrayList<>();
         adapter = new UserAdapter(list);
         recyclerView.setAdapter(adapter);
-
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
     }
 
 

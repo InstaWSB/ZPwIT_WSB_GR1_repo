@@ -4,6 +4,7 @@ package com.zpwit_wsb_gr1_project.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -26,6 +27,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -82,9 +86,17 @@ public class Add extends Fragment {
     private GalleryAdapter adapter;
     private List<GalleryImages> list;
     private LinearLayout linearView;
-
+    Context context1;
+    Animation scaleUp, scaleDown;
+    AnimationSet s;
     public Add() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        context1 = context;
     }
 
     @Override
@@ -103,7 +115,7 @@ public class Add extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    
+
         init(view);
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -115,6 +127,7 @@ public class Add extends Fragment {
         recyclerView.setAdapter(adapter);
 
         clickListener();
+
     }
 
     private void clickListener() {
@@ -129,7 +142,7 @@ public class Add extends Fragment {
                         .activity(picUri)
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setAspectRatio(4, 3)
-                        .getIntent(getContext());
+                        .getIntent(context1);
 
 
 
@@ -142,8 +155,10 @@ public class Add extends Fragment {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.startAnimation(s);
+
                 FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageReference = storage.getReference().child("Post Images/"+System.currentTimeMillis());
+                final StorageReference storageReference = storage.getReference().child("Post Images/" + System.currentTimeMillis());
 
                 dialog.show();
 
@@ -162,7 +177,7 @@ public class Add extends Fragment {
                         else
                         {
                             dialog.dismiss();
-                            Toast.makeText(getContext(),getResources().getString(R.string.failedUploadPost), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context1,context1.getResources().getString(R.string.failedUploadPost), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -180,7 +195,7 @@ public class Add extends Fragment {
                 CropImage.ActivityResult result1 = CropImage.getActivityResult(intent);
                 imageUri = result1.getUri();
 
-                Glide.with(getContext()).load(imageUri).into(imageView);
+                Glide.with(context1).load(imageUri).into(imageView);
                 linearView.setVisibility(View.VISIBLE);
                 nextBtn.setVisibility(View.VISIBLE);
 
@@ -199,6 +214,9 @@ public class Add extends Fragment {
                 .document(user.getUid()).collection("Post Images");
 
 
+        List<String> list = new ArrayList<>();
+
+
 
         String description = String.valueOf(descET.getText());
         String id = reference.document().getId();;
@@ -209,10 +227,9 @@ public class Add extends Fragment {
         map.put("imageUrl", imageURL);
         map.put("timestamp", FieldValue.serverTimestamp());
 
-        map.put("userName", user.getDisplayName());
+        map.put("name", user.getDisplayName());
         map.put("profileImage", String.valueOf(user.getPhotoUrl()));
-        map.put("likeCount", 0);
-        map.put("comments", "");
+        map.put("likes", list);
         map.put("uid", user.getUid());
 
 
@@ -222,7 +239,7 @@ public class Add extends Fragment {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful())
                 {
-                    Toast.makeText(getContext(),getResources().getString(R.string.uploadedPost), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context1,context1.getResources().getString(R.string.uploadedPost), Toast.LENGTH_SHORT).show();
                     System.out.println();
                     imageUri = null;
                     descET.setText("");
@@ -232,7 +249,7 @@ public class Add extends Fragment {
                 }
                 else
                 {
-                    Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context1, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 dialog.dismiss();
             }
@@ -245,7 +262,7 @@ public class Add extends Fragment {
     getActivity().runOnUiThread(new Runnable() {
         @Override
         public void run() {
-            Dexter.withContext(getContext())
+            Dexter.withContext(context1)
                     .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE).withListener(new MultiplePermissionsListener() {
                 @Override
@@ -291,9 +308,15 @@ public class Add extends Fragment {
         linearView = view.findViewById(R.id.LinearImage);
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        dialog = new Dialog(getContext());
+        scaleUp = AnimationUtils.loadAnimation(context1, R.anim.scale_up);
+        scaleDown = AnimationUtils.loadAnimation(context1, R.anim.scale_down);
+        s = new AnimationSet(false);//false means don't share interpolators
+        s.addAnimation(scaleDown);
+        s.addAnimation(scaleUp);
+
+        dialog = new Dialog(context1);
         dialog.setContentView(R.layout.laoding_dialog);
-        dialog.getWindow().setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.dialog_bg, null));
+        dialog.getWindow().setBackgroundDrawable(ResourcesCompat.getDrawable(context1.getResources(), R.drawable.dialog_bg, null));
         dialog.setCancelable(false);
 
     }

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,15 +25,17 @@ import com.zpwit_wsb_gr1_project.FragmentReplacerActivity;
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.model.HomeModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
+public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
 
     private final List<HomeModel> list;
     Activity context;
+    OnPressed onPressed;
 
 
     public HomeAdapter(List<HomeModel> list, Activity context) {
@@ -51,19 +54,37 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
     @Override
     public void onBindViewHolder(@NonNull HomeHolder holder, int position) {
 
-        holder.userNameTv.setText(list.get(position).getUserName());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        holder.userNameTv.setText(list.get(position).getName());
         holder.timeTv.setText("" + list.get(position).getTimestamp());
 
+        List<String> likeList = list.get(position).getLikes();
 
-        int count = list.get(position).getLikeCount();
+        int count = likeList.size();
 
         if (count == 0) {
-            holder.likeCountTv.setText("0 Like");
+            holder.likeCountTv.setText(context.getResources().getString(R.string.zeroLikes));
         } else if (count == 1) {
-            holder.likeCountTv.setText(count + " Like");
+            holder.likeCountTv.setText(count + context.getResources().getString(R.string.onelike));
         } else {
-            holder.likeCountTv.setText(count + " Likes");
+            holder.likeCountTv.setText(count + context.getResources().getString(R.string.moreLikes));
         }
+
+
+        if (likeList.contains(user.getUid()))
+        {
+            holder.likeCheckBox.setChecked(true);
+        }
+        else
+        {
+        holder.likeCheckBox.setChecked(false);
+        }
+
+
+        assert user != null;
+        holder.likeCheckBox.setChecked(likeList.contains(user.getUid()));
+
 
         holder.descriptionTv.setText(list.get(position).getDescription());
 
@@ -84,6 +105,14 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
                 .timeout(7000)
                 .into(holder.imageView);
 
+        holder.clickListener(position,
+                list.get(position).getId(),
+                list.get(position).getName(),
+                list.get(position).getUid(),
+                list.get(position).getLikes(),
+                list.get(position).getImageUrl()
+        );
+
     }
 
     @Override
@@ -92,17 +121,18 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
     }
 
 
-
     class HomeHolder extends RecyclerView.ViewHolder {
 
 
-        private CircleImageView profileImage;
-        private TextView userNameTv;
-        private TextView timeTv;
-        private TextView likeCountTv;
-        private TextView descriptionTv;
-        private ImageView imageView;
-        private ImageButton likeBtn, commentBtn, shareBtn;
+        private final CircleImageView profileImage;
+        private final TextView userNameTv;
+        private final TextView timeTv;
+        private final TextView likeCountTv;
+        private final TextView descriptionTv;
+        private final ImageView imageView;
+        private final CheckBox likeCheckBox;
+        private final ImageButton commentBtn;
+        private final ImageButton shareBtn;
 
 
         public HomeHolder(@NonNull View itemView) {
@@ -112,21 +142,20 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
             userNameTv = itemView.findViewById(R.id.nameTv);
             timeTv = itemView.findViewById(R.id.timeTv);
             likeCountTv = itemView.findViewById(R.id.likeCountTv);
+            likeCheckBox = itemView.findViewById(R.id.likeBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);
             shareBtn = itemView.findViewById(R.id.shareBtn);
             descriptionTv = itemView.findViewById(R.id.descTv);
+
             descriptionTv.setMovementMethod(new ScrollingMovementMethod());
 
             descriptionTv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (descriptionTv.getMaxLines()==3)
-                    {
+                    if (descriptionTv.getMaxLines() == 3) {
                         descriptionTv.setMaxLines(30);
 
-                    }
-                    else
-                    {
+                    } else {
                         descriptionTv.setMaxLines(3);
                     }
                 }
@@ -134,8 +163,33 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder>{
 
         }
 
+        public void clickListener(final int position, final String id, String name, final String uid, final List<String> likes, final String imageUrl) {
+            commentBtn.setOnClickListener(v -> {
 
 
+
+            });
+
+
+            shareBtn.setOnClickListener(v -> {
+
+
+            });
+
+            likeCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> onPressed.onLiked(position, id, uid, likes, isChecked));
+
+
+        }
+    }
+
+    public void OnPressed(OnPressed onPressed) {
+        this.onPressed = onPressed;
+    }
+
+    public interface OnPressed {
+        void onLiked(int position, String id, String uid, List<String> likeList, boolean isChecked);
+
+        void onComment(int position, String id, String comment);
 
     }
 }

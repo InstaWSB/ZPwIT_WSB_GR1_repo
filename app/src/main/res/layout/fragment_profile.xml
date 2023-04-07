@@ -38,7 +38,10 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_margin="@dimen/_9mdp"
+                android:layout_marginStart="@dimen/_9mdp"
+                android:layout_marginTop="@dimen/_9mdp"
+                android:layout_marginEnd="@dimen/_9mdp"
+                android:layout_marginBottom="@dimen/_9mdp"
                 android:background="@drawable/ic_menu"
                 android:contentDescription="@null" />
 

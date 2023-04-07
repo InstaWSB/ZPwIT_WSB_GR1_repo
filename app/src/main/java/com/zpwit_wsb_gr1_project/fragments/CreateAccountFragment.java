@@ -1,5 +1,6 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,8 +49,15 @@ public class CreateAccountFragment extends Fragment {
     private FirebaseAuth auth;
     Animation scaleUp, scaleDown;
     AnimationSet s;
+    Context context1;
     public CreateAccountFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        context1 = context;
     }
 
     @Override
@@ -94,22 +102,22 @@ public class CreateAccountFragment extends Fragment {
                 String confirmPassword = confirmPasswordEt.getText().toString();
 
                 if (name.isEmpty() || name.equals(" ")) {
-                    nameEt.setError(getResources().getString(R.string.inputValidName));
+                    nameEt.setError(context1.getResources().getString(R.string.inputValidName));
                     return;
                 }
 
                 if (email.isEmpty() || !email.matches(EMAIL_REGEX)) {
-                    emailEt.setError(getResources().getString(R.string.inputValidMail));
+                    emailEt.setError(context1.getResources().getString(R.string.inputValidMail));
                     return;
                 }
 
                 if (password.isEmpty() || password.length() < 6) {
-                    passwordEt.setError(getResources().getString(R.string.inputValidPassword));
+                    passwordEt.setError(context1.getResources().getString(R.string.inputValidPassword));
                     return;
                 }
 
                 if (!password.equals(confirmPassword)) {
-                    confirmPasswordEt.setError(getResources().getString(R.string.passwordNotMatch));
+                    confirmPasswordEt.setError(context1.getResources().getString(R.string.passwordNotMatch));
                     return;
                 }
 
@@ -145,7 +153,7 @@ public class CreateAccountFragment extends Fragment {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                Toast.makeText(getContext(), getResources().getString(R.string.emailverSend), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context1, context1.getResources().getString(R.string.emailverSend), Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });
@@ -154,7 +162,7 @@ public class CreateAccountFragment extends Fragment {
                         } else {
                             progressBar.setVisibility(View.GONE);
                             String exception = task.getException().getMessage();
-                            Toast.makeText(getContext(), "Error: " + exception, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context1, "Error: " + exception, Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -165,7 +173,8 @@ public class CreateAccountFragment extends Fragment {
 
     private void uploadUser(FirebaseUser user, String name, String email) {
 
-
+        List<String> list = new ArrayList<>();
+        List<String> list1 = new ArrayList<>();
 
         Map<String, Object> map = new HashMap<>();
 
@@ -174,11 +183,11 @@ public class CreateAccountFragment extends Fragment {
         map.put("profileImage", " ");
         map.put("uid", user.getUid());
 
-        map.put("followers", 0);
-        map.put("following", 0);
+
         map.put("status", " ");
         map.put("search", name.toLowerCase());
-
+        map.put("followers", list);
+        map.put("following", list1);
 
         FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
                 .set(map)
@@ -194,7 +203,7 @@ public class CreateAccountFragment extends Fragment {
 
                         } else {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getContext(), "Error: " + task.getException().getMessage(),
+                            Toast.makeText(context1, "Error: " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -214,8 +223,8 @@ public class CreateAccountFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
 
         auth = FirebaseAuth.getInstance();
-        scaleUp = AnimationUtils.loadAnimation(getContext(), R.anim.scale_up);
-        scaleDown = AnimationUtils.loadAnimation(getContext(), R.anim.scale_down);
+        scaleUp = AnimationUtils.loadAnimation(context1, R.anim.scale_up);
+        scaleDown = AnimationUtils.loadAnimation(context1, R.anim.scale_down);
         s = new AnimationSet(false);//false means don't share interpolators
         s.addAnimation(scaleDown);
         s.addAnimation(scaleUp);

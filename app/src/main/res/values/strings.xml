@@ -38,4 +38,10 @@
     <string name="uploadedPost">Uploaded</string>
     <string name="searchHere">Search here...</string>
     <string name="status">Status</string>
+    <string name="unFollow">Unfollow</string>
+    <string name="unFollowed">Unfollowed</string>
+    <string name="followed">Followed</string>
+    <string name="zeroLikes">0 Like</string>
+    <string name="onelike">" Like"</string>
+    <string name="moreLikes">" Likes"</string>
 </resources>

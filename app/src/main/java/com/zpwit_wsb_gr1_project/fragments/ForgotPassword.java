@@ -2,6 +2,7 @@ package com.zpwit_wsb_gr1_project.fragments;
 
 import static com.zpwit_wsb_gr1_project.fragments.CreateAccountFragment.EMAIL_REGEX;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -33,12 +37,19 @@ public class ForgotPassword extends Fragment {
     private FirebaseAuth auth;
 
     private ProgressBar progressBar;
+    Context context1;
+    Animation scaleUp, scaleDown;
+    AnimationSet s;
 
     public ForgotPassword() {
         // Required empty public constructor
     }
 
-
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        context1 = context;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +80,11 @@ public class ForgotPassword extends Fragment {
         emailEt = view.findViewById(R.id.emailET);
         recoverBtn = view.findViewById(R.id.recoverBtn);
         progressBar = view.findViewById(R.id.progressBar);
-
+        scaleUp = AnimationUtils.loadAnimation(context1, R.anim.scale_up);
+        scaleDown = AnimationUtils.loadAnimation(context1, R.anim.scale_down);
+        s = new AnimationSet(false);//false means don't share interpolators
+        s.addAnimation(scaleDown);
+        s.addAnimation(scaleUp);
         auth = FirebaseAuth.getInstance();
 
     }
@@ -79,6 +94,7 @@ public class ForgotPassword extends Fragment {
         loginTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.startAnimation(s);
                 ((FragmentReplacerActivity) getActivity()).setFragment(new LoginFragment());
             }
         });
@@ -90,7 +106,7 @@ public class ForgotPassword extends Fragment {
                 String email = emailEt.getText().toString();
 
                 if (email.isEmpty() || !email.matches(EMAIL_REGEX)){
-                    emailEt.setError(getResources().getString(R.string.inputValidMail));
+                    emailEt.setError(context1.getResources().getString(R.string.inputValidMail));
                     return;
                 }
 
@@ -102,12 +118,12 @@ public class ForgotPassword extends Fragment {
                             public void onComplete(@NonNull Task<Void> task) {
 
                                 if (task.isSuccessful()){
-                                    Toast.makeText(getContext(), getResources().getString(R.string.passwordResetSend),
+                                    Toast.makeText(context1, context1.getResources().getString(R.string.passwordResetSend),
                                             Toast.LENGTH_SHORT).show();
                                     emailEt.setText("");
                                 }else {
                                     String errMsg = task.getException().getMessage();
-                                    Toast.makeText(getContext(), "Error: "+errMsg, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context1, "Error: "+errMsg, Toast.LENGTH_SHORT).show();
                                 }
 
                                 progressBar.setVisibility(View.GONE);

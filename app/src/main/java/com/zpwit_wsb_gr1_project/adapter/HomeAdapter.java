@@ -147,6 +147,7 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             shareBtn = itemView.findViewById(R.id.shareBtn);
             descriptionTv = itemView.findViewById(R.id.descTv);
 
+
             descriptionTv.setMovementMethod(new ScrollingMovementMethod());
 
             descriptionTv.setOnClickListener(new View.OnClickListener() {
@@ -161,21 +162,31 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 }
             });
 
+
+
         }
 
         public void clickListener(final int position, final String id, String name, final String uid, final List<String> likes, final String imageUrl) {
             commentBtn.setOnClickListener(v -> {
 
+                Intent intent = new Intent(context, FragmentReplacerActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("uid", uid);
+                intent.putExtra("isComment", true);
 
+                context.startActivity(intent);
 
             });
 
 
             shareBtn.setOnClickListener(v -> {
 
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_TEXT, imageUrl);
+                intent.setType("text/*");
+                context.startActivity(Intent.createChooser(intent, context.getResources().getString(R.string.Sharelink)));
 
             });
-
             likeCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> onPressed.onLiked(position, id, uid, likes, isChecked));
 
 
@@ -188,8 +199,6 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
 
     public interface OnPressed {
         void onLiked(int position, String id, String uid, List<String> likeList, boolean isChecked);
-
-        void onComment(int position, String id, String comment);
 
     }
 }

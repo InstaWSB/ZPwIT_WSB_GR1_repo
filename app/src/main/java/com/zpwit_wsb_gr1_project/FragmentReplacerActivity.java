@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.zpwit_wsb_gr1_project.fragments.Comment;
 import com.zpwit_wsb_gr1_project.fragments.CreateAccountFragment;
 import com.zpwit_wsb_gr1_project.fragments.LoginFragment;
 
@@ -28,6 +29,13 @@ public class FragmentReplacerActivity extends AppCompatActivity {
         frameLayout = findViewById(R.id.frameLayout);
 
         setFragment( new LoginFragment());
+
+        boolean isComment = getIntent().getBooleanExtra("isComment", false);
+
+        if (isComment)
+            setFragment(new Comment());
+        else
+            setFragment(new LoginFragment());
     }
 
     public  void setFragment(Fragment fragment) {
@@ -36,6 +44,17 @@ public class FragmentReplacerActivity extends AppCompatActivity {
 
         if (fragment instanceof CreateAccountFragment) {
             fragmentTransaction.addToBackStack(null);
+        }
+
+        if (fragment instanceof Comment){
+
+            String id = getIntent().getStringExtra("id");
+            String uid = getIntent().getStringExtra("uid");
+
+            Bundle bundle = new Bundle();
+            bundle.putString("id", id);
+            bundle.putString("uid", uid);
+            fragment.setArguments(bundle);
         }
 
         fragmentTransaction.replace(frameLayout.getId(), fragment);

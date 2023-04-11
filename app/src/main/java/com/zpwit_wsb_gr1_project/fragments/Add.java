@@ -234,6 +234,7 @@ public class Add extends Fragment {
 
 
 
+
         reference.document(id).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -276,6 +277,8 @@ public class Add extends Fragment {
 
                             File[] files = file.listFiles();
                             assert files != null;
+
+                            list.clear();
                             for (File file1 : files)
                             {
                                 if (file1.getAbsolutePath().endsWith(".jpg") || file1.getAbsolutePath().endsWith(".png"))

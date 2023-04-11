@@ -44,4 +44,10 @@
     <string name="zeroLikes">0 Like</string>
     <string name="onelike">" Like"</string>
     <string name="moreLikes">" Likes"</string>
+    <string name="EnterComment">Enter your comment here</string>
+    <string name="Sharelink">Share link using...</string>
+    <string name="getComment">Enter comment</string>
+    <string name="failedComment">Failed to comment:</string>
+    <string name="noComments">No Comments</string>
+    <string name="comments">"Comments count: "</string>
 </resources>

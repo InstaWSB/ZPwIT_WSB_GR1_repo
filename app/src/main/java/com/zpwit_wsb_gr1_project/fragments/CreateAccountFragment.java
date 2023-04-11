@@ -142,10 +142,12 @@ public class CreateAccountFragment extends Fragment {
 
                             FirebaseUser user = auth.getCurrentUser();
 
+                            String image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwp--EwtYaxkfsSPIpoSPucdbxAo6PancQX1gw6ETSKI6_pGNCZY4ts1N6BV5ZcN3wPbA&usqp=CAU";
+
+
                             UserProfileChangeRequest.Builder request = new UserProfileChangeRequest.Builder();
                             request.setDisplayName(name);
-
-                            assert user != null;
+                            request.setPhotoUri(Uri.parse(image));
                             user.updateProfile(request.build());
 
                             user.sendEmailVerification()

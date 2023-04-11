@@ -7,27 +7,47 @@ import java.util.List;
 
 public class HomeModel {
 
-    private String name, profileImage, imageUrl, uid, comments, description, id;
+    private String name, profileImage, imageUrl, uid,  description, id;
 
     @ServerTimestamp
     private Date timestamp;
     private List<String> likes;
+    private int commentCount;
 
 
     public HomeModel() {
 
     }
 
-    public HomeModel(String name, String profileImage, String imageUrl, String uid, String comments, String description, String id, Date timestamp, List<String> likes) {
+    public HomeModel(String name, String profileImage, String imageUrl, String uid,  String description, String id, Date timestamp, List<String> likes) {
         this.name = name;
         this.profileImage = profileImage;
         this.imageUrl = imageUrl;
         this.uid = uid;
-        this.comments = comments;
         this.description = description;
         this.id = id;
         this.timestamp = timestamp;
         this.likes = likes;
+    }
+
+    public HomeModel(String name, String profileImage, String imageUrl, String uid, String description, String id, Date timestamp, List<String> likes, int commentCount) {
+        this.name = name;
+        this.profileImage = profileImage;
+        this.imageUrl = imageUrl;
+        this.uid = uid;
+        this.description = description;
+        this.id = id;
+        this.timestamp = timestamp;
+        this.likes = likes;
+        this.commentCount = commentCount;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
     }
 
     public List<String> getLikes() {
@@ -70,13 +90,6 @@ public class HomeModel {
         this.uid = uid;
     }
 
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
 
     public String getDescription() {
         return description;

@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.zpwit_wsb_gr1_project.FragmentReplacerActivity;
 import com.zpwit_wsb_gr1_project.MainActivity;
 import com.zpwit_wsb_gr1_project.R;
@@ -180,37 +181,54 @@ public class CreateAccountFragment extends Fragment {
 
         Map<String, Object> map = new HashMap<>();
 
-        map.put("name", name);
-        map.put("email", email);
-        map.put("profileImage", " ");
-        map.put("uid", user.getUid());
 
 
-        map.put("status", " ");
-        map.put("search", name.toLowerCase());
-        map.put("followers", list);
-        map.put("following", list1);
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (!task.isSuccessful())
+                {
+                    return;
+                }
 
-        FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
-                .set(map)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                String token = task.getResult();
 
-                        if (task.isSuccessful()) {
-                            assert getActivity() != null;
-                            progressBar.setVisibility(View.GONE);
-                            startActivity(new Intent(getActivity().getApplicationContext(), MainActivity.class));
-                            getActivity().finish();
+                map.put("name", name);
+                map.put("email", email);
+                map.put("profileImage", " ");
+                map.put("uid", user.getUid());
 
-                        } else {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(context1, "Error: " + task.getException().getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
 
-                    }
-                });
+                map.put("status", " ");
+                map.put("search", name.toLowerCase());
+                map.put("followers", list);
+                map.put("following", list1);
+                map.put("cloudToken", token);
+
+                FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
+                        .set(map)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+                                if (task.isSuccessful()) {
+                                    assert getActivity() != null;
+                                    progressBar.setVisibility(View.GONE);
+                                    startActivity(new Intent(getActivity().getApplicationContext(), MainActivity.class));
+                                    getActivity().finish();
+
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(context1, "Error: " + task.getException().getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        });
+            }
+        });
+
+
 
     }
 

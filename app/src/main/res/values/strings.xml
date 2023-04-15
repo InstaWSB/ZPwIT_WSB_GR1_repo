@@ -50,4 +50,22 @@
     <string name="failedComment">Failed to comment:</string>
     <string name="noComments">No Comments</string>
     <string name="comments">"Comments count: "</string>
+    <string name="followedyou">Followed you.</string>
+    <string name="newMessage">New message.</string>
+    <string name="newphoto">Changing picture</string>
+    <string name="description">Changing description</string>
+    <string name="changingName">Changing Name</string>
+    <string name="chooseOne">Choose one option:</string>
+    <string name="editProfile">Edit profile</string>
+    <string name="editDescription">Put new description.</string>
+    <string name="newText">"Enter text "</string>
+    <string name="textCannontBeEmpty">text cannot be empty.</string>
+    <string name="editName">Put new name.</string>
+    <string name="changedSuccesfull">Changed Successfully</string>
+    <string name="logout">Log out</string>
+    <string name="areyousure">Are you sure?</string>
+    <string name="deletingPost">Deleting a post</string>
+    <string name="deleted">Deleted successfully</string>
+    <string name="deletedfailed">Deletion failed</string>
+    <string name="updatedFailed">Update failed</string>
 </resources>

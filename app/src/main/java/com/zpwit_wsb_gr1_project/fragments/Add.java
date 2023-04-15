@@ -48,8 +48,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -64,6 +68,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.adapter.GalleryAdapter;
 import com.zpwit_wsb_gr1_project.model.GalleryImages;
+import com.zpwit_wsb_gr1_project.model.Users;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -89,6 +94,9 @@ public class Add extends Fragment {
     Context context1;
     Animation scaleUp, scaleDown;
     AnimationSet s;
+    private Users usersModel;
+    private ListenerRegistration registration;
+
     public Add() {
         // Required empty public constructor
     }
@@ -227,8 +235,8 @@ public class Add extends Fragment {
         map.put("imageUrl", imageURL);
         map.put("timestamp", FieldValue.serverTimestamp());
 
-        map.put("name", user.getDisplayName());
-        map.put("profileImage", String.valueOf(user.getPhotoUrl()));
+        map.put("name", usersModel.getName());
+        map.put("profileImage", usersModel.getProfileImage());
         map.put("likes", list);
         map.put("uid", user.getUid());
 
@@ -321,6 +329,45 @@ public class Add extends Fragment {
         dialog.setContentView(R.layout.laoding_dialog);
         dialog.getWindow().setBackgroundDrawable(ResourcesCompat.getDrawable(context1.getResources(), R.drawable.dialog_bg, null));
         dialog.setCancelable(false);
+
+
+
+        final DocumentReference reference2 = FirebaseFirestore.getInstance().collection("Users")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        registration = reference2.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value1, @Nullable FirebaseFirestoreException error1) {
+                if (error1 != null) {
+                    Log.d("Error: ", error1.getMessage());
+                    return;
+                }
+
+                if (value1 == null)
+                {
+                    return;
+                }
+
+                usersModel = value1.toObject(Users.class);
+
+            }
+        });
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+                onDestroyView();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Usunięcie nasłuchiwania w momencie opuszczania fragmentu
+        if (registration != null) {
+            registration.remove();
+        }
 
     }
 }

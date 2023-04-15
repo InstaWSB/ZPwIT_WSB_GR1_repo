@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -40,22 +42,29 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.zpwit_wsb_gr1_project.adapter.ViewPagerAdapter;
+import com.zpwit_wsb_gr1_project.fragments.Comment;
+import com.zpwit_wsb_gr1_project.fragments.Home;
+import com.zpwit_wsb_gr1_project.fragments.Notification;
+import com.zpwit_wsb_gr1_project.fragments.Profile;
 import com.zpwit_wsb_gr1_project.fragments.Search;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements Search.OnDataPass {
+public class MainActivity extends AppCompatActivity implements Search.OnDataPass, Notification.OnDataPass1, Home.OnDataPass2 {
 
     private TabLayout tabLayout;
     private ViewPager2 viewPage2;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
+    public static String USER_ID;
+    public static boolean IS_SEARCHED_USER = false;
+    private int tabOpenInt=0;
     ViewPagerAdapter viewPagerAdapter;
 
     @Override
@@ -63,11 +72,29 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         init();
         
         addTabs();
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            tabOpenInt = intent.getIntExtra("data", 0);
+            if (tabOpenInt==4)
+            {
+                USER_ID = intent.getStringExtra("uid");
+                IS_SEARCHED_USER = intent.getBooleanExtra("user", true);
+            }
+            tabLayout.selectTab(tabLayout.getTabAt(tabOpenInt));
+            viewPage2.setCurrentItem(tabOpenInt);
+
+        }
+
+
     }
+
+
+
 
     private void addTabs() {
 
@@ -103,21 +130,35 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
                     case 0:
                         tab.setIcon(R.drawable.ic_home_fill);
+                        IS_SEARCHED_USER = false;
+                        USER_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         break;
 
                     case 1:
                         tab.setIcon(R.drawable.ic_search_fill);
+                        IS_SEARCHED_USER = false;
+                        USER_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         break;
 
                     case 2:
                         tab.setIcon(R.drawable.ic_add_fill);
+                        IS_SEARCHED_USER = false;
+                        USER_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         break;
 
                     case 3:
                         tab.setIcon(R.drawable.notification_fill);
+                        IS_SEARCHED_USER = false;
+                        USER_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         break;
                     case 4:
                         tab.setIcon(R.drawable.ic_profile_fill);
+                        // Reset the Profile fragment
+                        Fragment fragment = getSupportFragmentManager().findFragmentByTag("f" + 4);
+                        if (fragment != null && fragment instanceof Profile) {
+                            getSupportFragmentManager().beginTransaction().detach(fragment).commitNow();
+                            getSupportFragmentManager().beginTransaction().attach(fragment).commitNow();
+                        }
                         break;
                 }
             }
@@ -164,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
                         break;
 
                     case 3:
-
                         tab.setIcon(R.drawable.notification_fill);
                         break;
                     case 4:
@@ -186,24 +226,43 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
     }
 
-    private Bitmap loadProfileImage(String directory) {
 
-        try {
-            File file = new File(directory, "profile.png");
 
-            return BitmapFactory.decodeStream(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
 
-    }
-
-    public static String USER_ID;
-    public static boolean IS_SEARCHED_USER = false;
     @Override
     public void onChange(String uid) {
         USER_ID = uid;
+
+        if (!USER_ID.equals(user.getUid()))
+        {
+            IS_SEARCHED_USER = true;
+        }
+        else
+        {
+            IS_SEARCHED_USER = false;
+        }
+        tabLayout.selectTab(tabLayout.getTabAt(4));
+        viewPage2.setCurrentItem(4);
+    }
+
+    @Override
+    public void onChange1(String uid1) {
+        USER_ID = uid1;
+        if (!USER_ID.equals(user.getUid()))
+        {
+            IS_SEARCHED_USER = true;
+        }
+        else
+        {
+            IS_SEARCHED_USER = false;
+        }
+        tabLayout.selectTab(tabLayout.getTabAt(4));
+        viewPage2.setCurrentItem(4);
+    }
+
+    @Override
+    public void onChange2(String uid2) {
+        USER_ID = uid2;
         if (!USER_ID.equals(user.getUid()))
         {
             IS_SEARCHED_USER = true;
@@ -217,18 +276,42 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
     }
 
 
-
     @Override
     public void onBackPressed() {
 
-        if (viewPage2.getCurrentItem() == 4) {
+        if (viewPage2.getCurrentItem() >=0 && viewPage2.getCurrentItem() <=4) {
             tabLayout.selectTab(tabLayout.getTabAt(0));
             viewPage2.setCurrentItem(0);
             IS_SEARCHED_USER = false;
 
         } else
+        {
             super.onBackPressed();
+
+        }
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus(true);
+    }
 
+    @Override
+    protected void onPause() {
+        updateStatus(false);
+        super.onPause();
+    }
+
+    void updateStatus(boolean status) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("online", status);
+
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(user.getUid())
+                .update(map);
+    }
 }

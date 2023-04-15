@@ -42,10 +42,18 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.zpwit_wsb_gr1_project.FragmentReplacerActivity;
 import com.zpwit_wsb_gr1_project.MainActivity;
 import com.zpwit_wsb_gr1_project.R;
+import com.zpwit_wsb_gr1_project.ViewStoryActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,11 +137,39 @@ public class LoginFragment extends Fragment {
 
                                     FirebaseUser user = auth.getCurrentUser();
 
-                                    if (!user.isEmailVerified()) {
-                                        Toast.makeText(context1, context1.getResources().getString(R.string.pleaseVerifyEmail), Toast.LENGTH_SHORT).show();
-                                    }
+                                    Map<String, Object> map = new HashMap<>();
 
-                                    sendUserToMainActivity();
+                                    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<String> task) {
+                                            if (!task.isSuccessful()) {
+                                                return;
+                                            }
+                                            String token = task.getResult();
+                                            map.put("cloudToken", token);
+                                            FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
+                                                    .update(map)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                assert getActivity() != null;
+                                                                progressBar.setVisibility(View.GONE);
+                                                                sendUserToMainActivity();
+
+                                                                if (!user.isEmailVerified()) {
+                                                                    Toast.makeText(context1, context1.getResources().getString(R.string.pleaseVerifyEmail), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                                sendUserToMainActivity();
+                                                            } else {
+                                                                progressBar.setVisibility(View.GONE);
+                                                                Toast.makeText(context1, "Error: " + task.getException().getMessage(),
+                                                                        Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    });
 
                                 } else {
                                     String exception = "Error: " + task.getException().getMessage();
@@ -255,37 +291,85 @@ public class LoginFragment extends Fragment {
         Map<String, Object> map = new HashMap<>();
         List<String> list = new ArrayList<>();
         List<String> list1 = new ArrayList<>();
-        map.put("name", account.getDisplayName());
-        map.put("email", account.getEmail());
-        map.put("profileImage", String.valueOf(account.getPhotoUrl()));
-        map.put("uid", user.getUid());
-        map.put("status", " ");
-        map.put("search", account.getDisplayName().toLowerCase());
-        map.put("followers", list);
-        map.put("following", list1);
 
+        List<String> userList = new ArrayList<>();
+        userList.add(user.getUid());
+        Query query = FirebaseFirestore.getInstance().collection("Users");
+        query.whereIn("uid", userList).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot == null || querySnapshot.isEmpty()) {
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                            @Override
+                            public void onComplete(@NonNull Task<String> task) {
+                                if (!task.isSuccessful()) {
+                                    return;
+                                }
+                                String token = task.getResult();
+                                map.put("name", account.getDisplayName());
+                                map.put("email", account.getEmail());
+                                map.put("profileImage", String.valueOf(account.getPhotoUrl()));
+                                map.put("uid", user.getUid());
+                                map.put("status", " ");
+                                map.put("search", account.getDisplayName().toLowerCase());
+                                map.put("followers", list);
+                                map.put("following", list1);
+                                map.put("cloudToken", token);
 
-        FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
-                .set(map)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
-                        if (task.isSuccessful()) {
-                            assert getActivity() != null;
-                            progressBar.setVisibility(View.GONE);
-                            sendUserToMainActivity();
-
-                        } else {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(context1, "Error: " + task.getException().getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
+                                FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
+                                        .set(map)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    assert getActivity() != null;
+                                                    progressBar.setVisibility(View.GONE);
+                                                    sendUserToMainActivity();
+                                                } else {
+                                                    progressBar.setVisibility(View.GONE);
+                                                    Toast.makeText(context1, "Error: " + task.getException().getMessage(),
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            }
+                        });
+                    } else {
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                            @Override
+                            public void onComplete(@NonNull Task<String> task) {
+                                if (!task.isSuccessful()) {
+                                    return;
+                                }
+                                String token = task.getResult();
+                                map.put("cloudToken", token);
+                                FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
+                                        .update(map)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    assert getActivity() != null;
+                                                    progressBar.setVisibility(View.GONE);
+                                                    sendUserToMainActivity();
+                                                } else {
+                                                    progressBar.setVisibility(View.GONE);
+                                                    Toast.makeText(context1, "Error: " + task.getException().getMessage(),
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            }
+                        });
                     }
-                });
-
-
+                } else {
+                    Log.d("Error: ", task.getException().getMessage());
+                }
+            }
+        });
     }
+
 
 }

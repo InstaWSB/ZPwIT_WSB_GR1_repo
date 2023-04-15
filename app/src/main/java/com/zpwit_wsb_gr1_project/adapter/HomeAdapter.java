@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.text.format.DateUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +29,7 @@ import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.model.HomeModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -36,6 +40,7 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
     private final List<HomeModel> list;
     Activity context;
     OnPressed onPressed;
+    OnNotClicked2 onNotClicked2;
 
 
     public HomeAdapter(List<HomeModel> list, Activity context) {
@@ -57,7 +62,7 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         holder.userNameTv.setText(list.get(position).getName());
-        holder.timeTv.setText("" + list.get(position).getTimestamp());
+        holder.timeTv.setText("" + calculateTime(list.get(position).getTimestamp()));
 
         List<String> likeList = list.get(position).getLikes();
 
@@ -113,6 +118,12 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 list.get(position).getImageUrl()
         );
 
+        holder.profileImage.setOnClickListener(v -> {
+            onNotClicked2.onClicked(list.get(position).getUid());
+
+        });
+
+
     }
 
     @Override
@@ -166,6 +177,7 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
 
         }
 
+
         public void clickListener(final int position, final String id, String name, final String uid, final List<String> likes, final String imageUrl) {
             commentBtn.setOnClickListener(v -> {
 
@@ -175,22 +187,45 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 intent.putExtra("isComment", true);
 
                 context.startActivity(intent);
+            });
 
+            imageView.setOnClickListener(v -> {
+
+                Intent intent = new Intent(context, FragmentReplacerActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("uid", uid);
+                intent.putExtra("isComment", true);
+
+                context.startActivity(intent);
             });
 
 
-            shareBtn.setOnClickListener(v -> {
 
+            shareBtn.setOnClickListener(v -> {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.putExtra(Intent.EXTRA_TEXT, imageUrl);
                 intent.setType("text/*");
                 context.startActivity(Intent.createChooser(intent, context.getResources().getString(R.string.Sharelink)));
-
             });
             likeCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> onPressed.onLiked(position, id, uid, likes, isChecked));
 
 
         }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    String calculateTime(Date date) {
+        long millis = date.toInstant().toEpochMilli();
+        return DateUtils.getRelativeTimeSpanString(millis, System.currentTimeMillis(), 60000, DateUtils.FORMAT_ABBREV_TIME).toString();
+    }
+
+    public void OnNotClicked2(OnNotClicked2 onNotClicked2) {
+        this.onNotClicked2 = onNotClicked2;
+    }
+
+    public interface OnNotClicked2 {
+        void onClicked(String uid);
     }
 
     public void OnPressed(OnPressed onPressed) {

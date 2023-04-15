@@ -2,17 +2,26 @@ package com.zpwit_wsb_gr1_project.model;
 
 public class Users {
 
-    private String email, name, profileImage, uid, status;
+    private String email, name, profileImage, uid, status, cloudToken;
 
     public Users() {
     }
 
-    public Users(String email, String name, String profileImage, String uid, String status) {
+    public Users(String email, String name, String profileImage, String uid, String status, String cloudToken) {
         this.email = email;
         this.name = name;
         this.profileImage = profileImage;
         this.uid = uid;
         this.status = status;
+        this.cloudToken = cloudToken;
+    }
+
+    public String getCloudToken() {
+        return cloudToken;
+    }
+
+    public void setCloudToken(String cloudToken) {
+        this.cloudToken = cloudToken;
     }
 
     public String getEmail() {

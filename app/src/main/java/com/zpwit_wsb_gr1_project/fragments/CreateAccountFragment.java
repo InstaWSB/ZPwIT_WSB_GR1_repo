@@ -214,8 +214,7 @@ public class CreateAccountFragment extends Fragment {
                                 if (task.isSuccessful()) {
                                     assert getActivity() != null;
                                     progressBar.setVisibility(View.GONE);
-                                    startActivity(new Intent(getActivity().getApplicationContext(), MainActivity.class));
-                                    getActivity().finish();
+                                    ((FragmentReplacerActivity) getActivity()).setFragment(new LoginFragment());
 
                                 } else {
                                     progressBar.setVisibility(View.GONE);

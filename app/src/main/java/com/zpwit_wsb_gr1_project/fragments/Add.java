@@ -3,8 +3,10 @@ package com.zpwit_wsb_gr1_project.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -65,6 +67,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.zpwit_wsb_gr1_project.MainActivity;
 import com.zpwit_wsb_gr1_project.R;
 import com.zpwit_wsb_gr1_project.adapter.GalleryAdapter;
 import com.zpwit_wsb_gr1_project.model.GalleryImages;
@@ -75,6 +78,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class Add extends Fragment {
@@ -301,15 +305,43 @@ public class Add extends Fragment {
                     }
                 }
 
+
                 @Override
                 public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
-
+                    new AlertDialog.Builder(context1)
+                            .setTitle(context1.getResources().getString(R.string.permissions))
+                            .setMessage(context1.getResources().getString(R.string.settingsMessage))
+                            .setPositiveButton(context1.getResources().getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    permissionToken.continuePermissionRequest();
+                                }
+                            })
+                            .setNegativeButton(context1.getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    permissionToken.cancelPermissionRequest();
+                                    Intent intent = new Intent(context1, MainActivity.class);
+                                    startActivity(intent);
+                                    requireActivity().finish();
+                                }
+                            })
+                            .setCancelable(false)
+                            .show();
                 }
             }).check();
+
         }
     });
     }
 
+    MultiplePermissionsListener emptyPermissionsListener = new MultiplePermissionsListener() {
+        @Override
+        public void onPermissionsChecked(MultiplePermissionsReport report) {}
+
+        @Override
+        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {}
+    };
     private void init(View view) {
 
         descET = view.findViewById(R.id.descriptionET);

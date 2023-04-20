@@ -18,7 +18,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_42mdp"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/_42mdp"
         android:layout_marginTop="@dimen/_6mdp"
         android:layout_marginBottom="@dimen/_6mdp"
         android:layout_toEndOf="@id/profileImage"
@@ -31,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#000"
+            android:maxLines="1"
             android:textSize="@dimen/_12font_mdp"
             android:textStyle="bold" />
 

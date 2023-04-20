@@ -173,7 +173,17 @@ public class HomeAdapter  extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 }
             });
 
+            userNameTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (userNameTv.getMaxLines() == 1) {
+                        userNameTv.setMaxLines(3);
 
+                    } else {
+                        userNameTv.setMaxLines(1);
+                    }
+                }
+            });
 
         }
 

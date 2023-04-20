@@ -235,6 +235,7 @@ public class StoryAddActivity extends AppCompatActivity {
 
         reference.document(id)
                 .set(map);
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.addedSuccsess), Toast.LENGTH_SHORT).show();
 
         alertDialog.dismissWithAnimation();
 

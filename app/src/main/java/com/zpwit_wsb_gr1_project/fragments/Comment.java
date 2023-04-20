@@ -284,6 +284,17 @@ public class Comment extends Fragment {
                 }
             }
         });
+        userNameTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (userNameTv.getMaxLines() == 1) {
+                    userNameTv.setMaxLines(3);
+
+                } else {
+                    userNameTv.setMaxLines(1);
+                }
+            }
+        });
     }
 
     private void loadDataFromFirestore() {
@@ -440,7 +451,7 @@ public class Comment extends Fragment {
                 // Tworzenie obiektu EditText programowo
                 final EditText editText = new EditText(context1);
                 editText.setHint(context1.getResources().getString(R.string.newText)); // Ustawianie podpowiedzi w polu EditText
-
+                editText.setText(model1.getDescription());
                 // Dodawanie pola EditText do AlertDialog
                 builder.setView(editText);
 

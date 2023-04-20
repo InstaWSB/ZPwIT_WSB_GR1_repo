@@ -68,4 +68,6 @@
     <string name="deleted">Deleted successfully</string>
     <string name="deletedfailed">Deletion failed</string>
     <string name="updatedFailed">Update failed</string>
+    <string name="addedSuccsess">Successfully added</string>
+    <string name="textLess50">/50 characters.</string>
 </resources>

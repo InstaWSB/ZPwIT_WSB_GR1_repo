@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/InstaWSBFinal/app/src/main/res/layout/fragment_comment.xml" value="0.17806484295845998" />
+        <entry key="..\:/Android/InstaWSBFinal/app/src/main/res/layout/fragment_profile.xml" value="0.2046875" />
+        <entry key="..\:/Android/InstaWSBFinal/app/src/main/res/layout/home_items.xml" value="0.36666666666666664" />
+        <entry key="..\:/Android/InstaWSBFinal/app/src/main/res/layout/notification_items.xml" value="0.36666666666666664" />
+        <entry key="..\:/Android/InstaWSBFinal/app/src/main/res/layout/profile_image_items.xml" value="0.36666666666666664" />
         <entry key="..\:/Android/ZPwIT_WSB_GR1_project/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3828125" />
         <entry key="..\:/Android/ZPwIT_WSB_GR1_project/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3828125" />
         <entry key="..\:/Android/ZPwIT_WSB_GR1_project/app/src/main/res/layout/activity_chat_users_activity.xml" value="0.20572916666666666" />

@@ -140,6 +140,9 @@ public class Profile extends Fragment   {
     ImageButton sendButton;
     private String search1, search2;
     private ListenerRegistration registration;
+    private String name;
+    private String status;
+
     public Profile() {
         // Required empty public constructor
     }
@@ -171,6 +174,29 @@ public class Profile extends Fragment   {
 
 
         init(view);
+
+        statusTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (statusTv.getMaxLines() == 3) {
+                    statusTv.setMaxLines(30);
+
+                } else {
+                    statusTv.setMaxLines(3);
+                }
+            }
+        });
+        nameTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (nameTv.getMaxLines() == 1) {
+                    nameTv.setMaxLines(3);
+
+                } else {
+                    nameTv.setMaxLines(1);
+                }
+            }
+        });
 
         myRef = FirebaseFirestore.getInstance().collection("Users").
                 document(user.getUid());
@@ -372,7 +398,7 @@ public class Profile extends Fragment   {
         builder.setPositiveButton(context1.getResources().getString(R.string.changingName), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                changeName();
+                changeName(name);
             }
         });
 
@@ -397,7 +423,7 @@ public class Profile extends Fragment   {
         builder.setNegativeButton(context1.getResources().getString(R.string.description), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                changeDesc();
+                changeDesc(status);
            }
         });
 
@@ -408,7 +434,7 @@ public class Profile extends Fragment   {
         alertDialog.show();
     }
 
-    private void changeDesc() {
+    private void changeDesc(String newDesc) {
         // Tworzenie obiektu AlertDialog.Builder
         AlertDialog.Builder builder = new AlertDialog.Builder(context1);
 
@@ -422,7 +448,7 @@ public class Profile extends Fragment   {
         // Tworzenie obiektu EditText programowo
         final EditText editText = new EditText(context1);
         editText.setHint(context1.getResources().getString(R.string.newText)); // Ustawianie podpowiedzi w polu EditText
-
+        editText.setText(newDesc);
         // Dodawanie pola EditText do AlertDialog
         builder.setView(editText);
 
@@ -454,7 +480,7 @@ public class Profile extends Fragment   {
 
                 } else {
                     Toast.makeText(context1, context1.getResources().getString(R.string.textCannontBeEmpty), Toast.LENGTH_SHORT).show();
-                    changeDesc();
+                    changeDesc("");
                 }
 
             }
@@ -475,7 +501,7 @@ public class Profile extends Fragment   {
         alertDialog.show();
     }
 
-    private void changeName() {
+    private void changeName(String newName) {
         // Tworzenie obiektu AlertDialog.Builder
         AlertDialog.Builder builder = new AlertDialog.Builder(context1);
 
@@ -489,6 +515,7 @@ public class Profile extends Fragment   {
         // Tworzenie obiektu EditText programowo
         final EditText editText = new EditText(context1);
         editText.setHint(context1.getResources().getString(R.string.newText)); // Ustawianie podpowiedzi w polu EditText
+        editText.setText(newName);
 
         // Dodawanie pola EditText do AlertDialog
         builder.setView(editText);
@@ -496,11 +523,20 @@ public class Profile extends Fragment   {
         builder.setPositiveButton(context1.getResources().getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                    try {
-                        String text = editText.getText().toString().trim();
+                boolean fail = false;
+                try {
+                    String text = editText.getText().toString().trim();
 
-                        // Sprawdzanie, czy pole EditText nie jest puste
-                        if (!TextUtils.isEmpty(text)) {
+                    // Sprawdzanie, czy pole EditText nie jest puste
+                    if (!TextUtils.isEmpty(text)) {
+                        if (text.length()>50)
+                        {
+                            fail = true;
+                            Toast.makeText(context1, editText.length()+context1.getResources().getString(R.string.textLess50), Toast.LENGTH_SHORT).show();
+                            changeName(text);
+                        }
+                        else
+                        {
                             Map<String, Object> map = new HashMap<>();
                             String name = String.valueOf(editText.getText());
                             map.put("name", name);
@@ -510,21 +546,28 @@ public class Profile extends Fragment   {
                                     .document(user.getUid())
                                     .update(map);
 
-                                changePost(name);
-                                changeComments(name);
-
-                        } else {
-                            Toast.makeText(context1, context1.getResources().getString(R.string.textCannontBeEmpty), Toast.LENGTH_SHORT).show();
-                            changeName();
+                            changePost(name);
+                            changeComments(name);
                         }
+
+
+                    } else {
+                        fail = true;
+                        Toast.makeText(context1, context1.getResources().getString(R.string.textCannontBeEmpty), Toast.LENGTH_SHORT).show();
+                        changeName("");
                     }
-                    catch (Exception e)
+                }
+                catch (Exception e)
+                {
+                    fail = true;
+                    Toast.makeText(context1, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                finally {
+                    if (!fail)
                     {
-                        Toast.makeText(context1, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                    finally {
                         Toast.makeText(context1, context1.getResources().getString(R.string.changedSuccesfull), Toast.LENGTH_SHORT).show();
                     }
+                }
 
             }
         });
@@ -841,9 +884,8 @@ public class Profile extends Fragment   {
             assert value != null;
             if (value.exists()) {
 
-                String name = value.getString("name");
-                String status = value.getString("status");
-
+                name = value.getString("name");
+                status = value.getString("status");
                 final String profileURL = value.getString("profileImage");
 
                 nameTv.setText(name);

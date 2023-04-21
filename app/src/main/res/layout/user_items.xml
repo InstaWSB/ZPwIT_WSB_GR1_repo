@@ -22,6 +22,7 @@
         android:layout_toRightOf="@id/profileImage"
         android:padding="@dimen/_6mdp"
         android:text="@string/userName"
+        android:maxLines="1"
         android:textSize="@dimen/_14font_mdp"
         android:textStyle="bold" />
 
@@ -30,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/nameTV"
+        android:maxLines="3"
         android:layout_toEndOf="@id/profileImage"
         android:layout_toRightOf="@id/profileImage"
         android:paddingStart="@dimen/_6mdp"

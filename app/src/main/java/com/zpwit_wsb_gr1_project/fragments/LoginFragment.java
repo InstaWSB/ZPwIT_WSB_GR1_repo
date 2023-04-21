@@ -3,7 +3,9 @@ package com.zpwit_wsb_gr1_project.fragments;
 import static com.zpwit_wsb_gr1_project.fragments.CreateAccountFragment.EMAIL_REGEX;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -155,12 +157,39 @@ public class LoginFragment extends Fragment {
                                                             if (task.isSuccessful()) {
                                                                 assert getActivity() != null;
                                                                 progressBar.setVisibility(View.GONE);
-                                                                sendUserToMainActivity();
 
                                                                 if (!user.isEmailVerified()) {
+                                                                    new AlertDialog.Builder(context1)
+                                                                            .setTitle(context1.getResources().getString(R.string.neededConfirmEmail))
+                                                                            .setMessage(context1.getResources().getString(R.string.resendEmail))
+                                                                            .setPositiveButton(context1.getResources().getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
+                                                                                @Override
+                                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                                    FirebaseUser user = auth.getCurrentUser();
+                                                                                    user.sendEmailVerification()
+                                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                                @Override
+                                                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                                                    if (task.isSuccessful()) {
+                                                                                                        Toast.makeText(context1, context1.getResources().getString(R.string.emailverSend), Toast.LENGTH_SHORT).show();
+                                                                                                    }
+                                                                                                }
+                                                                                            });
+                                                                                }
+                                                                            })
+                                                                            .setNegativeButton(context1.getResources().getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+                                                                                @Override
+                                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                                }
+                                                                            })
+                                                                            .show();
                                                                     Toast.makeText(context1, context1.getResources().getString(R.string.pleaseVerifyEmail), Toast.LENGTH_SHORT).show();
                                                                 }
-                                                                sendUserToMainActivity();
+                                                                else
+                                                                {
+                                                                    sendUserToMainActivity();
+                                                                }
                                                             } else {
                                                                 progressBar.setVisibility(View.GONE);
                                                                 Toast.makeText(context1, "Error: " + task.getException().getMessage(),

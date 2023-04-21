@@ -70,4 +70,8 @@
     <string name="updatedFailed">Update failed</string>
     <string name="addedSuccsess">Successfully added</string>
     <string name="textLess50">/50 characters.</string>
+    <string name="permissions">Permissions</string>
+    <string name="settingsMessage">This function requires memory access. Without these permissions, you will not add posts, do not change profile pictures and this may cause application errors until they are granted. The next time you have to manually add them in the settings.</string>
+    <string name="neededConfirmEmail">Confirmation required.</string>
+    <string name="resendEmail">Resend email address for verification?</string>
 </resources>

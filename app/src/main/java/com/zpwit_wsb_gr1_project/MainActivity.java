@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
     @Override
     public void onBackPressed() {
 
-        if (viewPage2.getCurrentItem() >=0 && viewPage2.getCurrentItem() <=4) {
+        if (viewPage2.getCurrentItem() !=0) {
             tabLayout.selectTab(tabLayout.getTabAt(0));
             viewPage2.setCurrentItem(0);
             IS_SEARCHED_USER = false;
@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
         } else
         {
             super.onBackPressed();
-
+            finishAffinity();
         }
 
     }

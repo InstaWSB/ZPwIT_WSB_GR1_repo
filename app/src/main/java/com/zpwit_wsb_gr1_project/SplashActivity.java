@@ -30,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
                 if (user == null) {
                     startActivity(new Intent(SplashActivity.this, FragmentReplacerActivity.class));
 
+
                 } else if (!user.isEmailVerified()){
                     startActivity(new Intent(SplashActivity.this, FragmentReplacerActivity.class));
 

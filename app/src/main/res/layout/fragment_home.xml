@@ -45,17 +45,35 @@
     </androidx.appcompat.widget.Toolbar>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/storiesRecyclerView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar" />
+        android:orientation="horizontal"
+        android:layout_below="@id/toolbar"
+        android:id="@+id/linear">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="@dimen/_38mdp"
+            android:layout_height="@dimen/_38mdp"
+            app:civ_border_color="@android:color/darker_gray"
+            app:civ_border_width="2dp"
+            android:layout_margin="@dimen/_1mdp"
+            android:background="@drawable/ic_add"
+            android:id="@+id/add_story" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/storiesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/storiesRecyclerView">
+        android:layout_below="@+id/linear">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

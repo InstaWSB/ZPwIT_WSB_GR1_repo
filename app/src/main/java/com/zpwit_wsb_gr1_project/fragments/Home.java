@@ -1,5 +1,6 @@
 package com.zpwit_wsb_gr1_project.fragments;
 
+import android.Manifest;
 import android.animation.TimeAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -39,7 +40,13 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.zpwit_wsb_gr1_project.R;
+import com.zpwit_wsb_gr1_project.StoryAddActivity;
 import com.zpwit_wsb_gr1_project.adapter.HomeAdapter;
 import com.zpwit_wsb_gr1_project.adapter.NotificationAdapter;
 import com.zpwit_wsb_gr1_project.adapter.StoriesAdapter;
@@ -56,6 +63,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class Home extends Fragment {
 
@@ -70,7 +79,7 @@ public class Home extends Fragment {
     List<StoriesModel> storiesModelList;
     StoriesAdapter storiesAdapter;
     OnDataPass2 onDataPass2;
-
+    private CircleImageView add_story;
     public Home() {
         // Required empty public constructor
     }
@@ -296,6 +305,36 @@ public class Home extends Fragment {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+
+        add_story = view.findViewById(R.id.add_story);
+
+        add_story.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dexter.withContext(activity)
+                        .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .withListener(new MultiplePermissionsListener() {
+                            @Override
+                            public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+
+                                if (multiplePermissionsReport.areAllPermissionsGranted()) {
+
+                                    activity.startActivity(new Intent(activity, StoryAddActivity.class));
+
+                                } else {
+                                    Toast.makeText(activity, "Please allow permission from settings.", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+
+                            @Override
+                            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                                permissionToken.continuePermissionRequest();
+                            }
+                        }).check();
+            }
+        });
     }
 
     private void clickListener() {
